@@ -1,6 +1,7 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmConfig } from 'src/configs/typeorm.config';
+import { SigninController } from 'src/controllers/signin.controller';
 import { RPMLink } from 'src/entities/rpmlink.entity';
 import { UnAuthMiddleware } from 'src/middlewares/unauth.middleware';
 
@@ -9,7 +10,7 @@ import { UnAuthMiddleware } from 'src/middlewares/unauth.middleware';
     TypeOrmModule.forRoot(typeOrmConfig),
     TypeOrmModule.forFeature([RPMLink]),
   ],
-  controllers: [],
+  controllers: [SigninController],
   providers: [],
 })
 export class UnauthModule {
