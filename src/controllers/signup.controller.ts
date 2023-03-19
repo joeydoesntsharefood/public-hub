@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   NotFoundException,
@@ -76,7 +77,7 @@ export class SignupController {
 
     const response = await this.userService.createUser(userData);
 
-    console.log(response);
+    if (!response) throw new BadRequestException('Ocorreu algo de errado.');
 
     return;
   }
