@@ -3,9 +3,9 @@ import { Request, Response, NextFunction } from 'express';
 import { logger } from 'src/utils/logger.utils';
 
 @Injectable()
-export class LoggerMiddleware implements NestMiddleware {
+export class AuthMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
-    logger({ modules: 'UnAuth', req, res });
+    logger({ modules: 'Auth', req, res });
     next();
   }
 }

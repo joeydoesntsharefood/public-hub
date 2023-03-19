@@ -9,7 +9,7 @@ import {
 import { AvatarService } from 'src/services/avatar.service';
 import { ResponseInterceptor } from '../interceptors/user.interceptor';
 
-@Controller('avatar')
+@Controller('auth/avatar')
 export class AvatarController {
   constructor(private readonly service: AvatarService) {}
 

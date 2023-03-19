@@ -1,7 +1,7 @@
 import { Controller, Get, Param, Post, UseInterceptors } from '@nestjs/common';
 import { ResponseInterceptor } from '../interceptors/user.interceptor';
 
-@Controller('schedule')
+@Controller('auth/schedule')
 export class ScheduleController {
   @Get(':id')
   @UseInterceptors(new ResponseInterceptor<any>('Encontramos o seu evento.'))
