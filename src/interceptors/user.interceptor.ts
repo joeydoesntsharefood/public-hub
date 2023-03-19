@@ -3,6 +3,8 @@ import {
   NestInterceptor,
   ExecutionContext,
   CallHandler,
+  BadRequestException,
+  NotFoundException,
 } from '@nestjs/common';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -31,14 +33,14 @@ export class ResponseInterceptor<T>
         data,
       })),
       catchError((error) => {
-        const message = error?.response || 'Internal Server Error';
+        console.log(error);
+        const message = error?.response?.message || 'Internal Server Error';
         const statusCode = error?.status || 500;
 
-        return throwError(() => ({
-          message,
-          success: false,
-          statusCode,
-        }));
+        if (statusCode === 404)
+          throw new NotFoundException({ message, success: false });
+
+        throw new BadRequestException({ message, success: false });
       }),
     );
   }
