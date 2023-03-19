@@ -1,8 +1,11 @@
 import { Controller, Get, Param, Post, UseInterceptors } from '@nestjs/common';
+import { UserService } from 'src/services/user.service';
 import { ResponseInterceptor } from '../interceptors/user.interceptor';
 
-@Controller('user')
+@Controller('auth/user')
 export class UserController {
+  constructor(private readonly service: UserService) {}
+
   @Get(':id')
   @UseInterceptors(new ResponseInterceptor<any>('Encontramos o seu evento.'))
   async getuser(@Param('id') id: string): Promise<any> {
@@ -22,9 +25,13 @@ export class UserController {
   }
 
   @Get('')
-  @UseInterceptors(new ResponseInterceptor<any>('Encontramos o seu evento.'))
-  async getusers(@Param('id') id: string): Promise<any> {
-    return id;
+  @UseInterceptors(
+    new ResponseInterceptor<any>('Encontramos os seguintes usuários.'),
+  )
+  async getusers(): Promise<any> {
+    const response = await this.service.getAll();
+
+    return response;
   }
 
   @Post('')

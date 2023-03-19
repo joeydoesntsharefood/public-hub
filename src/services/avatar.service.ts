@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { RPMLink } from 'src/entities/rpmlink.entity';
 import { FindOneOptions, Repository } from 'typeorm';
 import { QueryError } from 'mysql2';
+import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
 @Injectable()
 export class AvatarService {
@@ -24,8 +25,12 @@ export class AvatarService {
     }
   }
 
-  async create(data: RPMLink): Promise<RPMLink> {
-    return await this.avatarRepository.save(data);
+  async create(link: string): Promise<RPMLink> {
+    const data = { link };
+
+    const response = await this.avatarRepository.save(data);
+
+    return response;
   }
 
   async findOne(id: number): Promise<RPMLink | QueryError> {
