@@ -50,14 +50,17 @@ export class ForgetController {
   @Post('verificate')
   @UseInterceptors(new ResponseInterceptor('Código de verificação válido.'))
   async verificate(@Body() body: any) {
-    const { email, code } = body;
+    const { email, code: passwordResetToken } = body;
 
-    const userData = await this.userService.findOne({ email });
+    const userData = await this.userService.findOne({
+      email,
+      passwordResetToken,
+    });
 
     if (!userData)
       throw new BadRequestException('Não foi possível encontrar o seu e-mail.');
 
-    if (userData?.passwordResetToken !== code)
+    if (userData?.passwordResetToken !== passwordResetToken)
       throw new BadRequestException('Código de verificação invalido.');
 
     return;
