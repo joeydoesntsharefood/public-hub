@@ -33,7 +33,6 @@ export class ResponseInterceptor<T>
         data,
       })),
       catchError((error) => {
-        console.log(error);
         const message = error?.response?.message || 'Internal Server Error';
         const statusCode = error?.status || 500;
 
