@@ -4,15 +4,19 @@ import { typeOrmConfig } from 'src/configs/typeorm.config';
 import { AvatarController } from 'src/controllers/avatar.controller';
 import { ScheduleController } from 'src/controllers/schedule.controller';
 import { UserController } from 'src/controllers/user.controller';
+import { VideoCallController } from 'src/controllers/videocall.controller';
 import { Emails } from 'src/entities/emails.entity';
 import { Painels } from 'src/entities/painels.entity';
 import { PainelsNames } from 'src/entities/painelsnames.entity';
 import { RPMLink } from 'src/entities/rpmlink.entity';
 import { Schedule } from 'src/entities/schedule.entity';
 import { User } from 'src/entities/user.entity';
+import { VideoCall } from 'src/entities/videocall.entity';
 import { AuthMiddleware } from 'src/middlewares/auth.middleware';
 import { AvatarService } from 'src/services/avatar.service';
+import { ScheduleService } from 'src/services/schedule.service';
 import { UserService } from 'src/services/user.service';
+import { VideoCallService } from 'src/services/videocall.service';
 
 @Module({
   imports: [
@@ -24,10 +28,16 @@ import { UserService } from 'src/services/user.service';
       PainelsNames,
       Schedule,
       Emails,
+      VideoCall,
     ]),
   ],
-  controllers: [UserController, ScheduleController, AvatarController],
-  providers: [UserService, AvatarService],
+  controllers: [
+    UserController,
+    ScheduleController,
+    AvatarController,
+    VideoCallController,
+  ],
+  providers: [UserService, AvatarService, VideoCallService, ScheduleService],
 })
 export class AuthModule {
   configure(consumer: MiddlewareConsumer) {

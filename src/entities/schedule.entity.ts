@@ -26,12 +26,15 @@ export class Schedule {
   @Column()
   placeName: string;
 
-  @Column({ type: 'datetime' })
-  startAt: Date;
+  @Column()
+  startAt: string;
 
-  @Column({ type: 'datetime' })
-  endAt: Date;
+  @Column()
+  endAt: string;
 
   @Column()
   invitesId: string;
+
+  @Column()
+  participatedUsers: string;
 }

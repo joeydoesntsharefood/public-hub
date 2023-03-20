@@ -1,7 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
-import { FindOneOptions, FindOptionsWhere, Repository } from 'typeorm';
+import {
+  FindManyOptions,
+  FindOneOptions,
+  FindOptionsWhere,
+  Repository,
+} from 'typeorm';
 
 @Injectable()
 export class UserService {
@@ -24,9 +29,15 @@ export class UserService {
     return response;
   }
 
-  async getAll() {
+  async getAll(query: any) {
     try {
-      const response = await this.userRepository.find();
+      const options: FindManyOptions<User> = {
+        where: {
+          ...query,
+        },
+      };
+
+      const response = await this.userRepository.find(options);
 
       if (!response)
         throw new Error('Não foi possível encontrar o dados solicitados.');
@@ -53,6 +64,16 @@ export class UserService {
     const response = await this.userRepository.save(data);
 
     if (!response) return null;
+
+    return response;
+  }
+
+  async deleteUser(id: number) {
+    const options: FindOptionsWhere<User> = {
+      id,
+    };
+
+    const response = await this.userRepository.delete(options);
 
     return response;
   }

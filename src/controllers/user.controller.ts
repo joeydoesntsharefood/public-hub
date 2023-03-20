@@ -1,4 +1,11 @@
-import { Controller, Get, Param, Post, UseInterceptors } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseInterceptors,
+} from '@nestjs/common';
 import { UserService } from 'src/services/user.service';
 import { ResponseInterceptor } from '../interceptors/user.interceptor';
 
@@ -28,8 +35,8 @@ export class UserController {
   @UseInterceptors(
     new ResponseInterceptor<any>('Encontramos os seguintes usuários.'),
   )
-  async getusers(): Promise<any> {
-    const response = await this.service.getAll();
+  async getusers(@Query() query: any): Promise<any> {
+    const response = await this.service.getAll(query);
 
     return response;
   }
