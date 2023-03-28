@@ -1,4 +1,6 @@
 import {
+  BadRequestException,
+  Body,
   Controller,
   Get,
   Param,
@@ -16,12 +18,24 @@ export class UserController {
   @Get(':id')
   @UseInterceptors(new ResponseInterceptor<any>('Encontramos o seu evento.'))
   async getuser(@Param('id') id: string): Promise<any> {
-    return id;
+    const response = await this.service.findOne({ id: Number(id) });
+
+    if (!response)
+      throw new BadRequestException(
+        'Não foi possível encontrar o usuário solicitado',
+      );
+
+    return response;
   }
 
   @Post(':id')
   @UseInterceptors(new ResponseInterceptor<any>('Encontramos o seu evento.'))
-  async edituser(@Param('id') id: string): Promise<any> {
+  async edituser(@Param('id') id: string, @Body() body: any): Promise<any> {
+    const response = await this.service.editUser(body, Number(id));
+
+    if (!response)
+      throw new BadRequestException('Não foi possível editar o seu usuário.');
+
     return id;
   }
 
@@ -37,6 +51,11 @@ export class UserController {
   )
   async getusers(@Query() query: any): Promise<any> {
     const response = await this.service.getAll(query);
+
+    if (!Array.isArray(response))
+      throw new BadRequestException(
+        'Não foi possível encontrar nenhum usuário.',
+      );
 
     return response;
   }
