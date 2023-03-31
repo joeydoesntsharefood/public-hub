@@ -3,10 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import {
   Brackets,
-  FindManyOptions,
   FindOneOptions,
   FindOptionsWhere,
-  Like,
   Repository,
 } from 'typeorm';
 
