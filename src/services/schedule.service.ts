@@ -51,11 +51,15 @@ export class ScheduleService {
   }
 
   async createSchedule(data: Partial<Schedule>) {
-    const response = await this.scheduleRepository.save(data);
+    try {
+      const response = await this.scheduleRepository.save(data);
 
-    if (!response) return null;
+      if (!response) return null;
 
-    return response;
+      return response;
+    } catch (err: any) {
+      console.log(err);
+    }
   }
 
   async deleteSchedule(id: number) {

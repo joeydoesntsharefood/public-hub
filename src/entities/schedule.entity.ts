@@ -35,6 +35,6 @@ export class Schedule {
   @Column()
   invitesId: string;
 
-  @Column()
-  participatedUsers: string;
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  participatedUsers: string | null;
 }

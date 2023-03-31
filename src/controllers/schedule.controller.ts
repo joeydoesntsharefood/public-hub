@@ -19,7 +19,14 @@ export class ScheduleController {
   @Get(':id')
   @UseInterceptors(new ResponseInterceptor<any>('Encontramos o seu evento.'))
   async getSchedule(@Param('id') id: string): Promise<any> {
-    return id;
+    const response = await this.service.findOne({ id: Number(id) });
+
+    if (!response)
+      throw new BadRequestException(
+        'Não foi possível encontrar o evento solicitado.',
+      );
+
+    return response;
   }
 
   @Post(':id')
@@ -33,24 +40,27 @@ export class ScheduleController {
     return;
   }
 
-  @Post(':id/user/:user')
+  @Post(':id/user')
   @UseInterceptors(
     new ResponseInterceptor<any>('Registramos sua participação no seu evento.'),
   )
-  async addInvite(@Param() params: any): Promise<any> {
-    const scheduleData = await this.service.findOne({ id: params?.id });
+  async addInvite(@Body() body: any, @Param('id') id: string): Promise<any> {
+    const createParticipatedUsersSchema = z.object({
+      participatedUsers: z.number().array(),
+    });
 
-    if (!scheduleData)
-      throw new BadRequestException('Não foi possível editar o evento.');
+    const { participatedUsers } = createParticipatedUsersSchema.parse(body);
 
-    const participatedUsers = [
-      ...scheduleData?.participatedUsers.split(','),
-      params?.user,
-    ];
+    if (!participatedUsers)
+      throw new BadRequestException(
+        'Envia os dados dos usuários participantes.',
+      );
+
+    const participatedUsersConcat = String(participatedUsers);
 
     const response = await this.service.editSchedule(
-      { participatedUsers: String(participatedUsers) },
-      Number(params?.id),
+      { participatedUsers: participatedUsersConcat },
+      Number(id),
     );
 
     if (!response)
@@ -60,9 +70,16 @@ export class ScheduleController {
   }
 
   @Post(':id/delete')
-  @UseInterceptors(new ResponseInterceptor<any>('Encontramos o seu evento.'))
+  @UseInterceptors(new ResponseInterceptor<any>('Deletamos o seu evento.'))
   async deleteSchedule(@Param('id') id: string): Promise<any> {
-    return id;
+    const response = await this.service.deleteSchedule(Number(id));
+
+    if (!response)
+      throw new BadRequestException(
+        'Não foi possível deletar o evento solicitado.',
+      );
+
+    return;
   }
 
   @Get('')

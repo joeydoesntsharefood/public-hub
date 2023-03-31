@@ -5,7 +5,6 @@ import {
   Get,
   Param,
   Post,
-  Request,
   UseInterceptors,
 } from '@nestjs/common';
 import { VideoCallService } from 'src/services/videocall.service';
