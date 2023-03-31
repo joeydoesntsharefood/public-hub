@@ -1,7 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Schedule } from 'src/entities/schedule.entity';
-import { FindOneOptions, FindOptionsWhere, Repository } from 'typeorm';
+import {
+  Brackets,
+  FindOneOptions,
+  FindOptionsWhere,
+  Repository,
+} from 'typeorm';
 
 @Injectable()
 export class ScheduleService {
@@ -24,18 +29,59 @@ export class ScheduleService {
     return response;
   }
 
-  async getAll(query: any) {
-    const options = {
-      where: {
-        ...query,
-      },
-    };
+  async getAll({
+    query,
+    endAt,
+    startAt,
+    search,
+  }: {
+    startAt: string;
+    endAt: string;
+    query: any;
+    search: string;
+  }) {
+    console.log(query);
 
-    const response = await this.scheduleRepository.find(options);
+    const queryBuilder = this.scheduleRepository.createQueryBuilder('schedule');
 
-    if (!response) return null;
+    if (query && Object.keys(query).length > 0) {
+      for (const [column, value] of Object.entries(query)) {
+        if (value !== undefined) {
+          queryBuilder.andWhere(`schedule.${column} = :${column}`, {
+            [column]: value,
+          });
+        }
+      }
+    }
 
-    return response;
+    if (search && search.trim().length > 0) {
+      queryBuilder.andWhere(
+        new Brackets((qb) => {
+          qb.where(`schedule.eventName LIKE :search`, {
+            search: `%${search}%`,
+          });
+        }),
+      );
+    }
+
+    if (startAt && endAt) {
+      queryBuilder.where('schedule.verifiedAt BETWEEN :startAt AND :endAt', {
+        startAt,
+        endAt,
+      });
+    } else if (startAt) {
+      queryBuilder.where('schedule.verifiedAt >= :startAt', {
+        startAt,
+      });
+    } else if (endAt) {
+      queryBuilder.where('schedule.verifiedAt <= :endAt', {
+        endAt,
+      });
+    }
+
+    const schedules = await queryBuilder.getMany();
+
+    return schedules;
   }
 
   async editSchedule(data: Partial<Schedule>, id: number) {

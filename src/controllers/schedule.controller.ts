@@ -11,6 +11,7 @@ import {
 import { ScheduleService } from 'src/services/schedule.service';
 import { z } from 'zod';
 import { ResponseInterceptor } from '../interceptors/user.interceptor';
+import { start } from 'repl';
 
 @Controller('auth/schedule')
 export class ScheduleController {
@@ -85,7 +86,31 @@ export class ScheduleController {
   @Get('')
   @UseInterceptors(new ResponseInterceptor<any>('Encontramos o seu evento.'))
   async getSchedules(@Query() query: any): Promise<any> {
-    const response = await this.service.getAll(query);
+    let startAt;
+    let endAt;
+    let search;
+
+    if (query && query?.startAt) {
+      startAt = query?.startAt;
+      delete query?.startAt;
+    }
+
+    if (query && query?.endAt) {
+      endAt = query?.endAt;
+      delete query?.endAt;
+    }
+
+    if (query && query?.search) {
+      search = query?.search;
+      delete query?.search;
+    }
+
+    const response = await this.service.getAll({
+      query,
+      endAt,
+      startAt,
+      search,
+    });
 
     return response;
   }
