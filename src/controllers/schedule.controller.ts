@@ -11,7 +11,6 @@ import {
 import { ScheduleService } from 'src/services/schedule.service';
 import { z } from 'zod';
 import { ResponseInterceptor } from '../interceptors/user.interceptor';
-import { start } from 'repl';
 
 @Controller('auth/schedule')
 export class ScheduleController {
@@ -119,10 +118,8 @@ export class ScheduleController {
   @UseInterceptors(new ResponseInterceptor<any>('Criamos o seu evento.'))
   async createSchedule(@Body() body: any): Promise<any> {
     const createScheduleSchema = z.object({
-      chain: z.string(),
       eventName: z.string(),
       hostId: z.string().email(),
-      invitesId: z.string(),
       isEventOpen: z.boolean(),
       ownerId: z.number(),
       placeId: z.number(),
@@ -136,7 +133,11 @@ export class ScheduleController {
     if (!validateBody)
       throw new BadRequestException('Não foi possível criar o seu evento.');
 
-    const response = await this.service.createSchedule(body);
+    const response = await this.service.createSchedule({
+      ...validateBody,
+      chain: body?.chain ?? '',
+      invitesId: body?.invitesId ?? '',
+    });
 
     if (!response)
       throw new BadRequestException('Não foi possível criar o seu evento.');

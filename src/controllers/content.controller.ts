@@ -15,6 +15,18 @@ import { z } from 'zod';
 export class ContentController {
   constructor(private readonly service: ContentService) {}
 
+  @Get('nouse')
+  @UseInterceptors(
+    new ResponseInterceptor<any>(
+      'Encontramos os seguintes paineis disponiveis.',
+    ),
+  )
+  async getNoUsePainels() {
+    const response = await this.service.getAllPainels();
+
+    return response;
+  }
+
   @Get('')
   @UseInterceptors(new ResponseInterceptor<any>('Encontramos o seu contéudos.'))
   async getContents(@Query() query: any): Promise<any> {

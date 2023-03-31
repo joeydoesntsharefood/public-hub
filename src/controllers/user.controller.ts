@@ -24,7 +24,9 @@ export class UserController {
   ) {}
 
   @Get(':id')
-  @UseInterceptors(new ResponseInterceptor<any>('Encontramos o seu evento.'))
+  @UseInterceptors(
+    new ResponseInterceptor<any>('Encontramos o dado solicitado.'),
+  )
   async getuser(@Param('id') id: string): Promise<any> {
     const response = await this.service.findOne({ id: Number(id) });
 
@@ -37,7 +39,7 @@ export class UserController {
   }
 
   @Post(':id')
-  @UseInterceptors(new ResponseInterceptor<any>('Encontramos o seu evento.'))
+  @UseInterceptors(new ResponseInterceptor<any>('Usuário editado com sucesso.'))
   async edituser(@Param('id') id: string, @Body() body: any): Promise<any> {
     const response = await this.service.editUser(body, Number(id));
 

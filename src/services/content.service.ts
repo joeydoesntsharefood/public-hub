@@ -25,7 +25,7 @@ export class ContentService {
     return response;
   }
 
-  async getAllPainels(query: any, search: string) {
+  async getAllPainels(query?: any, search?: string) {
     const queryBuilder =
       this.painelsNameRepository.createQueryBuilder('painelsNames');
 
