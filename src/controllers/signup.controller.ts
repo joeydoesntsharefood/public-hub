@@ -52,7 +52,7 @@ export class SignupController {
 
     const userData: Partial<User> = {
       acceptTerms: false,
-      accessLevel: 0,
+      accessLevel: 7,
       areaOfIntrest,
       chain,
       corp,

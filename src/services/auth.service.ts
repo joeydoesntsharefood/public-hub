@@ -34,7 +34,7 @@ export class AuthService {
   generateRandomNumber(): string {
     let result = '';
     for (let i = 0; i < 8; i++) {
-      result += Math.floor(Math.random() * 10).toString();
+      result += (Math.floor(Math.random() * 10) + 1).toString();
     }
     return result;
   }

@@ -13,6 +13,7 @@ import { Schedule } from 'src/entities/schedule.entity';
 import { User } from 'src/entities/user.entity';
 import { VideoCall } from 'src/entities/videocall.entity';
 import { AuthMiddleware } from 'src/middlewares/auth.middleware';
+import { AuthService } from 'src/services/auth.service';
 import { AvatarService } from 'src/services/avatar.service';
 import { ScheduleService } from 'src/services/schedule.service';
 import { UserService } from 'src/services/user.service';
@@ -37,7 +38,13 @@ import { VideoCallService } from 'src/services/videocall.service';
     AvatarController,
     VideoCallController,
   ],
-  providers: [UserService, AvatarService, VideoCallService, ScheduleService],
+  providers: [
+    UserService,
+    AvatarService,
+    VideoCallService,
+    ScheduleService,
+    AuthService,
+  ],
 })
 export class AuthModule {
   configure(consumer: MiddlewareConsumer) {

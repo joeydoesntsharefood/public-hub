@@ -24,7 +24,8 @@ export class SigninController {
 
     const response = await this.userService.findOne({ email });
 
-    if (!response) throw new NotFoundException('Não foi possível seu dados.');
+    if (!response)
+      throw new NotFoundException('Por favor insira dados validos.');
 
     const auth = await this.authService.verification(
       password,
