@@ -40,8 +40,6 @@ export class ScheduleService {
     query: any;
     search: string;
   }) {
-    console.log(query);
-
     const queryBuilder = this.scheduleRepository.createQueryBuilder('schedule');
 
     if (query && Object.keys(query).length > 0) {
@@ -64,17 +62,19 @@ export class ScheduleService {
       );
     }
 
-    if (startAt && endAt) {
-      queryBuilder.where('schedule.verifiedAt BETWEEN :startAt AND :endAt', {
-        startAt,
-        endAt,
-      });
-    } else if (startAt) {
-      queryBuilder.where('schedule.verifiedAt >= :startAt', {
+    // if (startAt && endAt) {
+    //   queryBuilder.where('schedule.startAt BETWEEN :startAt AND :endAt', {
+    //     startAt,
+    //     endAt,
+    //   });
+    // }
+
+    if (startAt) {
+      queryBuilder.where('schedule.startAt >= :startAt', {
         startAt,
       });
     } else if (endAt) {
-      queryBuilder.where('schedule.verifiedAt <= :endAt', {
+      queryBuilder.where('schedule.endAt <= :endAt', {
         endAt,
       });
     }

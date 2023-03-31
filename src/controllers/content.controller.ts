@@ -37,11 +37,7 @@ export class ContentController {
       delete query?.search;
     }
 
-    if (query && query?.id) {
-      query.id = Number(query?.id);
-    }
-
-    const response = await this.service.getAllPainels(query, search);
+    const response = await this.service.getAllPainels(search);
 
     const filterPainels = response.filter((value) => value?.inUse);
 

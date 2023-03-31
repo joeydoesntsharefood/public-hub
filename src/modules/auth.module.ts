@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmConfig } from 'src/configs/typeorm.config';
 import { AvatarController } from 'src/controllers/avatar.controller';
 import { ContentController } from 'src/controllers/content.controller';
+import { DeveloperController } from 'src/controllers/developer.controller';
 import { ScheduleController } from 'src/controllers/schedule.controller';
 import { UserController } from 'src/controllers/user.controller';
 import { VideoCallController } from 'src/controllers/videocall.controller';
@@ -17,6 +18,7 @@ import { AuthMiddleware } from 'src/middlewares/auth.middleware';
 import { AuthService } from 'src/services/auth.service';
 import { AvatarService } from 'src/services/avatar.service';
 import { ContentService } from 'src/services/content.service';
+import { DeveloperService } from 'src/services/developer.service';
 import { ScheduleService } from 'src/services/schedule.service';
 import { UserService } from 'src/services/user.service';
 import { VideoCallService } from 'src/services/videocall.service';
@@ -40,6 +42,7 @@ import { VideoCallService } from 'src/services/videocall.service';
     AvatarController,
     VideoCallController,
     ContentController,
+    DeveloperController,
   ],
   providers: [
     UserService,
@@ -48,6 +51,7 @@ import { VideoCallService } from 'src/services/videocall.service';
     ScheduleService,
     AuthService,
     ContentService,
+    DeveloperService,
   ],
 })
 export class AuthModule {

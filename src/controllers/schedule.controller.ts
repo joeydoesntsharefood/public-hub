@@ -88,6 +88,7 @@ export class ScheduleController {
     let startAt;
     let endAt;
     let search;
+    let isEventOpen;
 
     if (query && query?.startAt) {
       startAt = query?.startAt;
@@ -104,8 +105,13 @@ export class ScheduleController {
       delete query?.search;
     }
 
+    if (query && query?.isEventOpen) {
+      isEventOpen = query?.isEventOpen === 'true' ?? false;
+      delete query?.isEventOpen;
+    }
+
     const response = await this.service.getAll({
-      query,
+      query: { ...query, isEventOpen },
       endAt,
       startAt,
       search,

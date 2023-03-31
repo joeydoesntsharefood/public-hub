@@ -63,10 +63,24 @@ export class UserController {
     let search;
     let startAt;
     let endAt;
+    let name;
+    let lastName;
+    let firstAccess;
+    let partOf;
 
     if (query && query?.search) {
-      search = query?.search;
+      if (query?.search.replace(' ', '').length < query?.search.length) {
+        const fullName = query?.search.split(' ');
+        name = fullName[0];
+        lastName = fullName[1];
+      } else search = query?.search;
+
       delete query?.search;
+    }
+
+    if (query && query?.firstAccess) {
+      firstAccess = query?.firstAccess === 'true' ?? false;
+      delete query?.firstAccess;
     }
 
     if (query && query?.startAt) {
@@ -77,6 +91,11 @@ export class UserController {
     if (query && query?.endAt) {
       endAt = query?.endAt;
       delete query?.endAt;
+    }
+
+    if (query && query?.partOf) {
+      partOf = query?.partOf === 'true' ?? false;
+      delete query?.partOf;
     }
 
     const selectColumns: Array<string> = [
@@ -99,7 +118,7 @@ export class UserController {
 
     const response = await this.service.getAll({
       endAt,
-      query,
+      query: { ...query, name, lastName, firstAccess, partOf },
       search,
       startAt,
       selectColumns,
