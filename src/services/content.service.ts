@@ -52,11 +52,26 @@ export class ContentService {
   }
 
   async editPainelsName(query: any, body: Partial<PainelsNames>) {
-    const options: FindOptionsWhere<PainelsNames> = {
-      ...query,
+    try {
+      const options: FindOptionsWhere<PainelsNames> = {
+        ...query,
+      };
+
+      await this.painelsNameRepository.update(options, body);
+
+      return true;
+    } catch (err: any) {
+      console.log(err);
+      return false;
+    }
+  }
+
+  async deletePastPainels(id: number) {
+    const options: FindOptionsWhere<Painels> = {
+      painelId: id,
     };
 
-    const response = await this.painelsNameRepository.update(options, body);
+    const response = await this.painelsRepository.delete(options);
 
     return response;
   }

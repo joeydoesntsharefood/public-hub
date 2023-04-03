@@ -10,6 +10,8 @@ import {
 import { ResponseInterceptor } from '../interceptors/user.interceptor';
 import { ContentService } from 'src/services/content.service';
 import { z } from 'zod';
+import { Painels } from 'src/entities/painels.entity';
+import { parse } from 'url';
 
 @Controller('auth/content')
 export class ContentController {
@@ -66,18 +68,18 @@ export class ContentController {
     );
 
     const formatedData = data?.map((value) => ({
-      painelName: value?.painelName,
+      painelTitle: value?.painelName,
       painelId: value?.painelId,
       contents: value?.contents?.map((value) => {
-        const regexUrl = /^https?:\/\/([^\/]+)(\/[^?#]*)?([?#].*)?$/;
-        const match = value?.uri.match(regexUrl);
-
-        const regexUrlFile = /\/([^\/?#]+)[^\/]*$/;
-        const matchFile = value?.uri.match(regexUrlFile);
-        const file = matchFile[1];
-
-        const domain = match[1];
-        const path = match[2].replace(file, '') || '/';
+        const parsedUrl = parse(value?.uri);
+        const domain = parsedUrl.hostname;
+        const path = parsedUrl.pathname.substring(
+          0,
+          parsedUrl.pathname.lastIndexOf('/') + 1,
+        );
+        const file = parsedUrl.pathname.substring(
+          parsedUrl.pathname.lastIndexOf('/') + 1,
+        );
 
         return {
           id: value?.id,
@@ -135,6 +137,38 @@ export class ContentController {
 
     if (body?.contents && !responseCreate)
       throw new BadRequestException('Não foi possível salvar seus contéudos.');
+
+    return;
+  }
+
+  @Post(':id')
+  @UseInterceptors(new ResponseInterceptor('Painel atualizado com sucesso.'))
+  async editPainel(@Body() body: any) {
+    const { painelId, painelTitle, contents } = body;
+
+    const response = await this.service.editPainelsName(
+      { id: painelId },
+      { name: painelTitle },
+    );
+
+    if (!response)
+      throw new BadRequestException('Não foi possível atualizar o seu painel.');
+
+    if (contents) {
+      await this.service.deletePastPainels(Number(painelId));
+
+      for await (const content of contents) {
+        const data: Partial<Painels> = {
+          orderExp: content?.orderExp,
+          uri: content?.domain + content?.path + content?.file,
+          title: content?.title,
+          painelId,
+          painelTitle,
+        };
+
+        await this.service.createContents(data);
+      }
+    }
 
     return;
   }
