@@ -62,20 +62,15 @@ export class ScheduleService {
       );
     }
 
-    // if (startAt && endAt) {
-    //   queryBuilder.where('schedule.startAt BETWEEN :startAt AND :endAt', {
-    //     startAt,
-    //     endAt,
-    //   });
-    // }
-
     if (startAt) {
-      queryBuilder.where('schedule.startAt >= :startAt', {
-        startAt,
+      queryBuilder.andWhere('schedule.startAt >= :startAt', {
+        startAt: startAt.toString(),
       });
-    } else if (endAt) {
-      queryBuilder.where('schedule.endAt <= :endAt', {
-        endAt,
+    }
+
+    if (endAt) {
+      queryBuilder.andWhere('schedule.endAt <= :endAt', {
+        endAt: endAt.toString(),
       });
     }
 

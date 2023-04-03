@@ -16,6 +16,7 @@ import Services from 'src/services';
     Controllers.SignupController,
     Controllers.ForgetController,
     Controllers.UserValidateController,
+    Controllers.FirstAccessController,
   ],
   providers: [
     Services.UserService,

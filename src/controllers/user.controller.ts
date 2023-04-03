@@ -115,6 +115,8 @@ export class UserController {
       'user.lastName',
       'user.occupation',
       'user.chain',
+      'user.verifiedAt',
+      'user.accessLevel',
     ];
 
     const response = await this.service.getAll({
