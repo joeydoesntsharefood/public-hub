@@ -46,7 +46,7 @@ export class ContentController {
         'Não foi possível encontrar nenhum painel.',
       );
 
-    const data = Promise.all(
+    const data = await Promise.all(
       filterPainels?.map(async (value) => {
         const response = await this.service.getAllContents({
           painelId: value?.id,
@@ -55,12 +55,44 @@ export class ContentController {
         return {
           painelName: value?.name,
           painelId: value?.id,
-          contents: response,
+          contents: response.map((value) => ({
+            id: value?.id,
+            orderExp: value?.orderExp,
+            uri: value?.uri,
+            title: value?.title,
+          })),
         };
       }),
     );
 
-    return data;
+    const formatedData = data?.map((value) => ({
+      painelName: value?.painelName,
+      painelId: value?.painelId,
+      contents: value?.contents?.map((value) => {
+        const regexUrl = /^https?:\/\/([^\/]+)(\/[^?#]*)?([?#].*)?$/;
+        const match = value?.uri.match(regexUrl);
+
+        const regexUrlFile = /\/([^\/?#]+)[^\/]*$/;
+        const matchFile = value?.uri.match(regexUrlFile);
+        const file = matchFile[1];
+
+        const domain = match[1];
+        const path = match[2].replace(file, '') || '/';
+
+        return {
+          id: value?.id,
+          orderExp: value?.orderExp,
+          uri: {
+            domain,
+            path,
+            file,
+          },
+          title: value?.title,
+        };
+      }),
+    }));
+
+    return formatedData;
   }
 
   @Post('')

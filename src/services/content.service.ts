@@ -2,7 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Painels } from 'src/entities/painels.entity';
 import { PainelsNames } from 'src/entities/painelsnames.entity';
-import { Brackets, FindOptionsWhere, Repository } from 'typeorm';
+import {
+  Brackets,
+  FindManyOptions,
+  FindOptionsWhere,
+  Repository,
+} from 'typeorm';
 
 @Injectable()
 export class ContentService {
@@ -14,7 +19,7 @@ export class ContentService {
   ) {}
 
   async getAllContents(query: any) {
-    const options = {
+    const options: FindManyOptions<Painels> = {
       where: {
         ...query,
       },
