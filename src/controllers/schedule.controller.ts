@@ -12,10 +12,14 @@ import { ScheduleService } from 'src/services/schedule.service';
 import { z } from 'zod';
 import { ResponseInterceptor } from '../interceptors/user.interceptor';
 import { MailerConsumer } from 'src/consumers/mailer.consumer';
+import { UserService } from 'src/services/user.service';
 
 @Controller('auth/schedule')
 export class ScheduleController {
-  constructor(private readonly service: ScheduleService) {}
+  constructor(
+    private readonly service: ScheduleService,
+    private readonly userService: UserService,
+  ) {}
 
   @Get(':id')
   @UseInterceptors(new ResponseInterceptor<any>('Encontramos o seu evento.'))
@@ -118,7 +122,19 @@ export class ScheduleController {
       search,
     });
 
-    return response;
+    const getEmail = async (value) => {
+      const { email: ownerId } = await this.userService.findOne({
+        id: value?.ownerId,
+      });
+
+      if (!ownerId) return { ...value, ownerId: 'n/a' };
+
+      return { ...value, ownerId };
+    };
+
+    const data = await Promise.all(response?.map(getEmail));
+
+    return data;
   }
 
   @Post('')
