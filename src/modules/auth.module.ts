@@ -25,6 +25,7 @@ import Entities from 'src/entities';
     Controllers.VideoCallController,
     Controllers.ContentController,
     Controllers.DeveloperController,
+    Controllers.LogoutController,
   ],
   providers: [
     Services.UserService,

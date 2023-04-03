@@ -1,4 +1,10 @@
-import { Body, Controller, Post, UseInterceptors } from '@nestjs/common';
+import {
+  BadGatewayException,
+  Body,
+  Controller,
+  Post,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ResponseInterceptor } from 'src/interceptors/user.interceptor';
 import { ContentService } from 'src/services/content.service';
 import { DeveloperService } from 'src/services/developer.service';
@@ -28,6 +34,17 @@ export class DeveloperController {
     }
 
     console.log('Terminei de criar os painels: ');
+
+    return;
+  }
+
+  @Post('/reset/painels')
+  @UseInterceptors(new ResponseInterceptor('Painels resetados.'))
+  async resetPainels() {
+    const response = await this.contentServices.resetPainelsName();
+
+    if (!response)
+      throw new BadGatewayException('Não foi possível resetar os paineis.');
 
     return;
   }

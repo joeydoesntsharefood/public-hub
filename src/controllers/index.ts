@@ -8,6 +8,7 @@ import { UserController } from './user.controller';
 import { VideoCallController } from './videocall.controller';
 import { ScheduleController } from './schedule.controller';
 import { UserValidateController } from './userValidate.controller';
+import { LogoutController } from './logout.controller';
 
 const Controllers = {
   AvatarController,
@@ -20,6 +21,7 @@ const Controllers = {
   VideoCallController,
   ScheduleController,
   UserValidateController,
+  LogoutController,
 };
 
 export default Controllers;

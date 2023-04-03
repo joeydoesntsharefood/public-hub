@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   NotFoundException,
@@ -9,6 +10,7 @@ import { User } from 'src/entities/user.entity';
 import { AuthService } from 'src/services/auth.service';
 import { UserService } from 'src/services/user.service';
 import { ResponseInterceptor } from '../interceptors/user.interceptor';
+import dayjs from 'dayjs';
 
 @Controller('unauth/signin')
 export class SigninController {
@@ -32,14 +34,27 @@ export class SigninController {
       response?.passwordHash,
     );
 
-    if (!auth) throw new NotFoundException('Não foi possível seu dados.');
+    if (!auth) throw new NotFoundException('Não senha incorreta.');
+
+    if (response?.accessLevel === 7)
+      throw new BadRequestException('Usuário sem acesso a plataforma.');
+
+    if (response?.seasonDate)
+      throw new BadRequestException(
+        'Já existe um usuário logado nesse acesso.',
+      );
 
     const verificationToken = await this.authService.generateToken(
       String(response?.id),
     );
 
+    const [now] = new Date().toJSON().split('.');
+
     const responseEdit = await this.userService.editUser(
-      { verificationToken },
+      {
+        verificationToken,
+        seasonDate: now,
+      },
       response?.id,
     );
 

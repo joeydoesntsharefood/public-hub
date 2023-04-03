@@ -77,4 +77,35 @@ export class ContentService {
 
     return response;
   }
+
+  async resetPainelsName() {
+    try {
+      const painelsNamesRepository = this.painelsNameRepository;
+      const painelsRepository = this.painelsRepository;
+
+      await painelsNamesRepository
+        .createQueryBuilder()
+        .delete()
+        .from(PainelsNames)
+        .execute();
+
+      await painelsNamesRepository.query(
+        `ALTER TABLE PainelsNames AUTO_INCREMENT = 0`,
+      );
+
+      await painelsRepository
+        .createQueryBuilder()
+        .delete()
+        .from(PainelsNames)
+        .execute();
+
+      await painelsRepository.query(
+        `ALTER TABLE PainelsNames AUTO_INCREMENT = 0`,
+      );
+
+      return true;
+    } catch (err: any) {
+      return false;
+    }
+  }
 }

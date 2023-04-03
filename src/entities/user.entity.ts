@@ -73,4 +73,7 @@ export class User {
 
   @Column()
   cpf: string;
+
+  @Column({ nullable: true })
+  seasonDate?: string;
 }
