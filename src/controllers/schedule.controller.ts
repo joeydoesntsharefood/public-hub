@@ -175,8 +175,12 @@ export class ScheduleController {
         eventName,
       });
 
-    if (Array.isArray(body?.invitesId))
-      Promise.all(body?.invitesId.map(sendEmails));
+    let invitesId = body?.invitesId;
+
+    if (typeof body?.invitesId === 'string')
+      invitesId = body?.invitesId.split(',');
+
+    if (Array.isArray(invitesId)) Promise.all(invitesId.map(sendEmails));
 
     if (!response)
       throw new BadRequestException('Não foi possível criar o seu evento.');

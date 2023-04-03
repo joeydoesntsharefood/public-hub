@@ -4,7 +4,7 @@ import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class AuthService {
-  private readonly secret = 'your-secret-key';
+  private readonly secret = 'pub-2022';
 
   async generateHash(password: string): Promise<string> {
     const saltOrRounds = 10;
@@ -22,7 +22,7 @@ export class AuthService {
   }
 
   generateToken(userId: string): string {
-    const expiresIn = '1h';
+    const expiresIn = 300;
     const payload = { sub: userId };
     return jwt.sign(payload, this.secret, { expiresIn });
   }

@@ -5,6 +5,8 @@ import { AuthMiddleware } from 'src/middlewares/auth.middleware';
 import Controllers from 'src/controllers';
 import Services from 'src/services';
 import Entities from 'src/entities';
+import { JwtModule } from '@nestjs/jwt';
+import { JwtMiddleware } from 'src/middlewares/jwt.middleware';
 @Module({
   imports: [
     TypeOrmModule.forRoot(typeOrmConfig),
@@ -17,6 +19,10 @@ import Entities from 'src/entities';
       Entities.Emails,
       Entities.VideoCall,
     ]),
+    JwtModule.register({
+      secret: 'pub-2022',
+      signOptions: { expiresIn: 300 },
+    }),
   ],
   controllers: [
     Controllers.UserController,
@@ -26,6 +32,7 @@ import Entities from 'src/entities';
     Controllers.ContentController,
     Controllers.DeveloperController,
     Controllers.LogoutController,
+    Controllers.TokenController,
   ],
   providers: [
     Services.UserService,
@@ -35,6 +42,7 @@ import Entities from 'src/entities';
     Services.AuthService,
     Services.ContentService,
     Services.DeveloperService,
+    JwtMiddleware,
   ],
 })
 export class AuthModule {
@@ -42,5 +50,6 @@ export class AuthModule {
     consumer
       .apply(AuthMiddleware)
       .forRoutes({ path: 'auth/*', method: RequestMethod.ALL });
+    consumer.apply(JwtMiddleware).forRoutes('auth/*');
   }
 }
