@@ -1,13 +1,13 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmConfig } from 'src/configs/typeorm.config';
-import { RPMLink } from 'src/entities/rpmlink.entity';
+import Entities from 'src/entities';
 import { UnAuthMiddleware } from 'src/middlewares/unauth.middleware';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(typeOrmConfig),
-    TypeOrmModule.forFeature([RPMLink]),
+    TypeOrmModule.forFeature([Entities.RPMLink]),
   ],
   controllers: [],
   providers: [],

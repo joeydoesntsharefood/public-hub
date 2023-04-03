@@ -11,6 +11,7 @@ import {
 import { ScheduleService } from 'src/services/schedule.service';
 import { z } from 'zod';
 import { ResponseInterceptor } from '../interceptors/user.interceptor';
+import { MailerConsumer } from 'src/consumers/mailer.consumer';
 
 @Controller('auth/schedule')
 export class ScheduleController {
@@ -139,11 +140,43 @@ export class ScheduleController {
     if (!validateBody)
       throw new BadRequestException('Não foi possível criar o seu evento.');
 
+    const {
+      endAt,
+      eventName,
+      hostId,
+      isEventOpen,
+      ownerId,
+      placeId,
+      placeName,
+      startAt,
+    } = validateBody;
+
     const response = await this.service.createSchedule({
-      ...validateBody,
+      endAt,
+      eventName,
+      hostId,
+      isEventOpen,
+      ownerId,
+      placeId,
+      placeName,
+      startAt,
       chain: body?.chain ?? '',
-      invitesId: body?.invitesId ?? '',
+      invitesId: String(body?.invitesId) ?? '',
     });
+
+    const mailerConsumer = new MailerConsumer();
+
+    const sendEmails = async (value) =>
+      await mailerConsumer.sendInviteEvent({
+        to: value,
+        eventDate: startAt.split('T')[0],
+        eventHour: startAt.split('T')[1],
+        eventLocation: placeName,
+        eventName,
+      });
+
+    if (Array.isArray(body?.invitesId))
+      Promise.all(body?.invitesId.map(sendEmails));
 
     if (!response)
       throw new BadRequestException('Não foi possível criar o seu evento.');

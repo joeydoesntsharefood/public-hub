@@ -14,6 +14,7 @@ import { z } from 'zod';
 import { User } from 'src/entities/user.entity';
 import { AvatarService } from 'src/services/avatar.service';
 import { AuthService } from 'src/services/auth.service';
+import { MailerConsumer } from 'src/consumers/mailer.consumer';
 
 @Controller('auth/user')
 export class UserController {
@@ -183,12 +184,26 @@ export class UserController {
       rpmId: rpmLink?.id,
       verificationToken,
       verifiedAt: '',
+      cpf: '',
     };
 
     const response = await this.service.createUser(data);
 
+    const mailerConsumer = new MailerConsumer();
+
     if (!response)
       throw new BadRequestException('Não foi possível criar pré cadastro.');
+
+    const mailer = await mailerConsumer.sendConfirmationToken({
+      to: email,
+      name: name + lastName,
+      code: verificationToken,
+    });
+
+    if (!mailer)
+      throw new BadRequestException(
+        'Não foi possível enviar o e-mail de confirmação.',
+      );
 
     return;
   }

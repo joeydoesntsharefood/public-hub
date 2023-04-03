@@ -5,6 +5,7 @@ import {
   Post,
   UseInterceptors,
 } from '@nestjs/common';
+import { MailerConsumer } from 'src/consumers/mailer.consumer';
 import { ResponseInterceptor } from 'src/interceptors/user.interceptor';
 import { AuthService } from 'src/services/auth.service';
 import { UserService } from 'src/services/user.service';
@@ -42,6 +43,19 @@ export class ForgetController {
     if (!saveToken)
       throw new BadRequestException(
         'Não foi possível amarzenar o seu código de verificação.',
+      );
+
+    const mailerConsumer = new MailerConsumer();
+
+    const mailer = mailerConsumer.sendRecoveryPasswordToken({
+      to: email,
+      code: passwordResetToken,
+      name: userData?.name + userData?.lastName,
+    });
+
+    if (!mailer)
+      throw new BadRequestException(
+        'Não foi possível enviar o email com seu código.',
       );
 
     return;

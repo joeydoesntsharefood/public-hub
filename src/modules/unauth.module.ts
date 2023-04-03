@@ -1,23 +1,26 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmConfig } from 'src/configs/typeorm.config';
-import { ForgetController } from 'src/controllers/forget.controller';
-import { SigninController } from 'src/controllers/signin.controller';
-import { SignupController } from 'src/controllers/signup.controller';
-import { RPMLink } from 'src/entities/rpmlink.entity';
-import { User } from 'src/entities/user.entity';
 import { UnAuthMiddleware } from 'src/middlewares/unauth.middleware';
-import { AuthService } from 'src/services/auth.service';
-import { AvatarService } from 'src/services/avatar.service';
-import { UserService } from 'src/services/user.service';
+import Controllers from 'src/controllers';
+import Entities from 'src/entities';
+import Services from 'src/services';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(typeOrmConfig),
-    TypeOrmModule.forFeature([RPMLink, User]),
+    TypeOrmModule.forFeature([Entities.RPMLink, Entities.User]),
   ],
-  controllers: [SigninController, SignupController, ForgetController],
-  providers: [UserService, AuthService, AvatarService],
+  controllers: [
+    Controllers.SigninController,
+    Controllers.SignupController,
+    Controllers.ForgetController,
+  ],
+  providers: [
+    Services.UserService,
+    Services.AuthService,
+    Services.AvatarService,
+  ],
 })
 export class UnauthModule {
   configure(consumer: MiddlewareConsumer) {

@@ -70,4 +70,7 @@ export class User {
 
   @Column()
   chain: string;
+
+  @Column()
+  cpf: string;
 }
