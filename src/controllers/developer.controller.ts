@@ -1,6 +1,4 @@
 import { Body, Controller, Post, UseInterceptors } from '@nestjs/common';
-import dayjs from 'dayjs';
-import { response } from 'express';
 import { ResponseInterceptor } from 'src/interceptors/user.interceptor';
 import { ContentService } from 'src/services/content.service';
 import { DeveloperService } from 'src/services/developer.service';
