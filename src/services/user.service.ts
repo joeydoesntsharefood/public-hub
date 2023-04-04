@@ -76,17 +76,27 @@ export class UserService {
       }
 
       if (startAt && endAt) {
-        queryBuilder.where('user.verifiedAt BETWEEN :startAt AND :endAt', {
-          startAt,
-          endAt,
-        });
+        const startDate = new Date(startAt);
+        const endDate = new Date(endAt);
+
+        queryBuilder.where(
+          'Date(user.verifiedAt) BETWEEN :startDate AND :endDate',
+          {
+            startDate,
+            endDate,
+          },
+        );
       } else if (startAt) {
-        queryBuilder.where('user.verifiedAt >= :startAt', {
-          startAt,
+        const startDate = new Date(startAt);
+
+        queryBuilder.where('DATE(user.verifiedAt) >= :startDate', {
+          startDate,
         });
       } else if (endAt) {
-        queryBuilder.where('user.verifiedAt <= :endAt', {
-          endAt,
+        const endDate = new Date(endAt);
+
+        queryBuilder.where('DATE(user.verifiedAt) <= :endDate', {
+          endDate,
         });
       }
 

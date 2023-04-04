@@ -177,7 +177,7 @@ export class UserController {
       name,
       phone,
       occupation: '',
-      partOf: false,
+      partOf: true,
       passwordHash: '',
       passwordResetToken: '',
       passwordSalt: 10,

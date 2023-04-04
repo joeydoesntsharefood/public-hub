@@ -72,11 +72,13 @@ export class ContentController {
       painelId: value?.painelId,
       contents: value?.contents?.map((value) => {
         const parsedUrl = parse(value?.uri);
-        const domain = parsedUrl.hostname;
+        const domain = parsedUrl.protocol + '//' + parsedUrl.hostname;
+
         const path = parsedUrl.pathname.substring(
           0,
           parsedUrl.pathname.lastIndexOf('/') + 1,
         );
+
         const file = parsedUrl.pathname.substring(
           parsedUrl.pathname.lastIndexOf('/') + 1,
         );
@@ -145,6 +147,8 @@ export class ContentController {
   @UseInterceptors(new ResponseInterceptor('Painel atualizado com sucesso.'))
   async editPainel(@Body() body: any) {
     const { painelId, painelTitle, contents } = body;
+
+    console.log(contents);
 
     const response = await this.service.editPainelsName(
       { id: painelId },

@@ -10,11 +10,11 @@ import { ResponseInterceptor } from 'src/interceptors/user.interceptor';
 import { UserService } from 'src/services/user.service';
 import { z } from 'zod';
 
-@Controller('auth/user/validate')
+@Controller('unauth/validate')
 export class UserValidateController {
   constructor(private readonly userServices: UserService) {}
 
-  @Post('/create/painels')
+  @Post('user')
   @UseInterceptors(new ResponseInterceptor<any>('Código validado com sucesso.'))
   async validateConfirmationToken(@Body() body: any) {
     const createValidateTokenSchema = z.object({
@@ -42,7 +42,7 @@ export class UserValidateController {
         'Não foi possivel validar as informações do usuários, inserir corretamente.',
       );
 
-    const now = dayjs().format('YYYY-MM-DDTHH:mm');
+    const [now] = new Date().toJSON().split('.');
 
     const response = await this.userServices.editUser(
       {

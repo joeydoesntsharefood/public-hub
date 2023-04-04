@@ -37,11 +37,8 @@ export class SigninController {
     if (!auth) throw new NotFoundException('Não senha incorreta.');
 
     if (response?.accessLevel === 7)
-      throw new BadRequestException('Usuário sem acesso a plataforma.');
-
-    if (response?.seasonDate)
       throw new BadRequestException(
-        'Já existe um usuário logado nesse acesso.',
+        'Este usuário não possui permissão de acesso à plataforma.',
       );
 
     const verificationToken = await this.authService.generateToken(
