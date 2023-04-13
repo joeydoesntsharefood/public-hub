@@ -94,6 +94,7 @@ export class ScheduleController {
     let endAt;
     let search;
     let isEventOpen;
+    let dateType;
 
     if (query && query?.startAt) {
       startAt = query?.startAt;
@@ -115,6 +116,18 @@ export class ScheduleController {
       delete query?.isEventOpen;
     }
 
+    if (query && query.futures) {
+      const [now] = new Date().toJSON().split('.');
+      const [newDate] = now.split('T');
+      startAt = newDate;
+      delete query.futures;
+    }
+
+    if (query && query.dateType) {
+      dateType = query.dateType;
+      delete query.dateType;
+    }
+
     const response = await this.service.getAll({
       query: { ...query, isEventOpen },
       endAt,
@@ -132,9 +145,51 @@ export class ScheduleController {
       return { ...value, ownerId };
     };
 
-    const data = await Promise.all(response?.map(getEmail));
+    const formatDate = async (value) => {
+      let objStartAt;
+      let objEndAt;
+      const formatInvitesId = value?.invitesId.split(',') ?? [];
 
-    return data;
+      if (value?.startAt) {
+        const [date, time] = value?.startAt.split('T');
+        const [year, month, day] = date.split('-');
+        const [hour, minute] = time.split(':');
+
+        objStartAt = {
+          year: Number(year),
+          month: Number(month),
+          day: Number(day),
+          hour: Number(hour),
+          minute: Number(minute),
+        };
+      }
+      if (value?.endAt) {
+        const [date, time] = value?.startAt.split('T');
+        const [year, month, day] = date.split('-');
+        const [hour, minute] = time.split(':');
+
+        objEndAt = {
+          year: Number(year),
+          month: Number(month),
+          day: Number(day),
+          hour: Number(hour),
+          minute: Number(minute),
+        };
+      }
+
+      return {
+        ...value,
+        startAt: objStartAt,
+        endAt: objEndAt,
+        invitesId: formatInvitesId,
+      };
+    };
+
+    if (dateType === 'obj') {
+      return await Promise.all(response?.map(formatDate));
+    }
+
+    return await Promise.all(response?.map(getEmail));
   }
 
   @Post('')
