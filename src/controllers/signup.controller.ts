@@ -13,6 +13,7 @@ import { UserService } from 'src/services/user.service';
 import { ResponseInterceptor } from '../interceptors/user.interceptor';
 import { MailerConsumer } from 'src/consumers/mailer.consumer';
 import { z } from 'zod';
+import { AnalyticService } from 'src/services/analytic.service';
 
 @Controller('unauth/signup')
 export class SignupController {
@@ -20,6 +21,7 @@ export class SignupController {
     private readonly userService: UserService,
     private readonly authService: AuthService,
     private readonly avatarService: AvatarService,
+    private readonly analyticService: AnalyticService,
   ) {}
 
   @Post('')
@@ -158,6 +160,10 @@ export class SignupController {
       throw new BadRequestException(
         'Ocorreu um erro ao enviar seu código de verificação',
       );
+
+    const [now] = new Date().toJSON().split('.');
+
+    await this.analyticService.createAnalytics({ date: now, type: 'newUsers' });
 
     return;
   }

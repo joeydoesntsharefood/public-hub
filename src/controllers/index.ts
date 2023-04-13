@@ -10,6 +10,7 @@ import { ScheduleController } from './schedule.controller';
 import { UserValidateController } from './userValidate.controller';
 import { LogoutController } from './logout.controller';
 import { FirstAccessController } from './firstaccess.controller';
+import { AnalyticController } from './analytic.controller';
 
 const Controllers = {
   AvatarController,
@@ -24,6 +25,7 @@ const Controllers = {
   UserValidateController,
   FirstAccessController,
   LogoutController,
+  AnalyticController,
 };
 
 export default Controllers;

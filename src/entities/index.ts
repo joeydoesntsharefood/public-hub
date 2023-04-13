@@ -5,6 +5,7 @@ import { RPMLink } from './rpmlink.entity';
 import { Schedule } from './schedule.entity';
 import { User } from './user.entity';
 import { VideoCall } from './videocall.entity';
+import { Analytics } from './analytics.entity';
 
 const Entities = {
   Emails,
@@ -14,6 +15,7 @@ const Entities = {
   Schedule,
   User,
   VideoCall,
+  Analytics,
 };
 
 export default Entities;

@@ -6,6 +6,7 @@ import { AuthService } from './auth.service';
 import { AvatarService } from './avatar.service';
 import { ContentService } from './content.service';
 import { VideoCallService } from './videocall.service';
+import { AnalyticService } from './analytic.service';
 
 const Services = {
   AuthService,
@@ -16,6 +17,7 @@ const Services = {
   AvatarService,
   ContentService,
   VideoCallService,
+  AnalyticService,
 };
 
 export default Services;

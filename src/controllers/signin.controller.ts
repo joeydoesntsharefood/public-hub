@@ -10,13 +10,14 @@ import { User } from 'src/entities/user.entity';
 import { AuthService } from 'src/services/auth.service';
 import { UserService } from 'src/services/user.service';
 import { ResponseInterceptor } from '../interceptors/user.interceptor';
-import dayjs from 'dayjs';
+import { AnalyticService } from 'src/services/analytic.service';
 
 @Controller('unauth/signin')
 export class SigninController {
   constructor(
     private readonly userService: UserService,
     private readonly authService: AuthService,
+    private readonly analyticService: AnalyticService,
   ) {}
 
   @Post('')
@@ -57,6 +58,8 @@ export class SigninController {
 
     if (!responseEdit)
       throw new NotFoundException('Não foi possível registrar seu token.');
+
+    await this.analyticService.createAnalytics({ date: now, type: 'access' });
 
     const returnData: Partial<User> = {
       accessLevel: response?.accessLevel,

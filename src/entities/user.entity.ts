@@ -15,6 +15,9 @@ export class User {
   name: string;
 
   @Column()
+  lastName: string;
+
+  @Column()
   phone: string;
 
   @Column()
@@ -61,9 +64,6 @@ export class User {
 
   @Column()
   instituition: string;
-
-  @Column()
-  lastName: string;
 
   @Column()
   occupation: string;

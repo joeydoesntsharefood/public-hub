@@ -9,7 +9,11 @@ import Services from 'src/services';
 @Module({
   imports: [
     TypeOrmModule.forRoot(typeOrmConfig),
-    TypeOrmModule.forFeature([Entities.RPMLink, Entities.User]),
+    TypeOrmModule.forFeature([
+      Entities.RPMLink,
+      Entities.User,
+      Entities.Analytics,
+    ]),
   ],
   controllers: [
     Controllers.SigninController,
@@ -22,6 +26,7 @@ import Services from 'src/services';
     Services.UserService,
     Services.AuthService,
     Services.AvatarService,
+    Services.AnalyticService,
   ],
 })
 export class UnauthModule {

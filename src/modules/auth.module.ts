@@ -16,6 +16,7 @@ import Entities from 'src/entities';
       Entities.Schedule,
       Entities.Emails,
       Entities.VideoCall,
+      Entities.Analytics,
     ]),
   ],
   controllers: [
@@ -26,6 +27,7 @@ import Entities from 'src/entities';
     Controllers.ContentController,
     Controllers.DeveloperController,
     Controllers.LogoutController,
+    Controllers.AnalyticController,
   ],
   providers: [
     Services.UserService,
@@ -35,6 +37,7 @@ import Entities from 'src/entities';
     Services.AuthService,
     Services.ContentService,
     Services.DeveloperService,
+    Services.AnalyticService,
   ],
 })
 export class AuthModule {
