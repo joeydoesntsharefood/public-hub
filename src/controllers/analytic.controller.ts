@@ -11,6 +11,10 @@ import {
 import { Analytics } from 'src/entities/analytics.entity';
 import { ResponseInterceptor } from 'src/interceptors/user.interceptor';
 import { AnalyticService } from 'src/services/analytic.service';
+import { countCity } from 'src/utils/countCity';
+import { countDay } from 'src/utils/countDay';
+import { newDate } from 'src/utils/newDate';
+import translateMonths from 'src/utils/translate.months';
 
 @Controller('auth/analytic')
 export class AnalyticController {
@@ -22,9 +26,10 @@ export class AnalyticController {
     @Param('event') event: string,
     @Body() body?: { location?: string; painelId: number },
   ) {
-    const [now] = new Date().toJSON().split('.');
+    const date = newDate();
+
     const data: Partial<Analytics> = {
-      date: now,
+      date,
       type: event,
       location: body.location ?? '',
       painelId: body.painelId ?? 0,
@@ -63,17 +68,33 @@ export class AnalyticController {
         'Não foi possível encontrar os dados solicitados.',
       );
 
-    const newUsers = response?.filter((value) => value.type === 'newUsers');
+    const convertObjectDateToStringDate = (value: string) =>
+      new Date(value).toISOString();
+
+    const formatEvents = ({ date, type }: { type: string; date: string }) => ({
+      type,
+      date,
+    });
+
+    const newUsers = response
+      ?.filter((value) => value.type === 'newUsers')
+      .map(formatEvents);
 
     const access = response?.filter((value) => value.type === 'access');
 
-    const verifyUsers = response?.filter(
-      (value) => value.type === 'verifyUsers',
-    );
+    const verifyUsers = response
+      ?.filter((value) => value.type === 'verifyUsers')
+      .map(formatEvents);
+
+    const ambiences = response?.filter((value) => value.type === 'ambiences');
 
     const locations = response?.filter((value) => value.type === 'locations');
 
     const events: Array<{ type: string; value: number }> = [
+      {
+        type: 'Acesso a ambientes',
+        value: ambiences.length,
+      },
       {
         type: 'Acesso a localizações',
         value: locations.length,
@@ -98,90 +119,203 @@ export class AnalyticController {
 
     const locationsFormated: Array<{ type: string; value: number }> = [
       {
+        type: 'Espaço Agribusiness (BRAB)',
+        value: locations.filter((value) => value.location === '1').length,
+      },
+      {
+        type: 'Cadeia Algodão',
+        value: locations.filter((value) => value.location === '2').length,
+      },
+      {
+        type: 'Cadeia Aves',
+        value: locations.filter((value) => value.location === '3').length,
+      },
+      {
+        type: 'Cadeia Bovina',
+        value: locations.filter((value) => value.location === '4').length,
+      },
+      {
+        type: 'Cadeia Cacau',
+        value: locations.filter((value) => value.location === '5').length,
+      },
+      {
+        type: 'Cadeia Café',
+        value: locations.filter((value) => value.location === '6').length,
+      },
+      {
+        type: 'Cadeia Cana',
+        value: locations.filter((value) => value.location === '7').length,
+      },
+      {
+        type: 'Cadeia Leite',
+        value: locations.filter((value) => value.location === '8').length,
+      },
+      {
+        type: 'Cadeia Pescado',
+        value: locations.filter((value) => value.location === '9').length,
+      },
+      {
+        type: 'Cadeia Soja',
+        value: locations.filter((value) => value.location === '10').length,
+      },
+      {
+        type: 'Cadeia Suína',
+        value: locations.filter((value) => value.location === '11').length,
+      },
+      {
+        type: 'Pescaria',
+        value: locations.filter((value) => value.location === '12').length,
+      },
+      {
+        type: 'Institucional 1',
+        value: locations.filter((value) => value.location === '13').length,
+      },
+      {
+        type: 'Institucional 2',
+        value: locations.filter((value) => value.location === '14').length,
+      },
+      {
+        type: 'Institucional 3',
+        value: locations.filter((value) => value.location === '15').length,
+      },
+      {
+        type: 'Institucional 4',
+        value: locations.filter((value) => value.location === '16').length,
+      },
+    ];
+
+    const [year, month] = startAt.split('-');
+
+    const formatMonth = (month: number): string =>
+      month.toString().padStart(2, '0');
+
+    const lastMonths = (month: number, year: number): string[] => {
+      const date = new Date(year, month - 1, 1);
+      date.setFullYear(date.getFullYear() - (month < 5 ? 1 : 0));
+
+      let currentYear = year;
+
+      const months = Array.from({ length: 5 }, (_, i) => {
+        const lastMonth = ((((month - 1 - i) % 12) + 12) % 12) + 1;
+
+        if (lastMonth === 12) currentYear--;
+
+        return `${formatMonth(lastMonth)}-${currentYear}`;
+      });
+
+      return months;
+    };
+
+    const months = lastMonths(Number(month), Number(year));
+
+    const accessForMonth: Array<{ type: string; value: number }> = months.map(
+      (monthAndYear: string) => {
+        const [month, year] = monthAndYear.split('-');
+
+        const value = access.filter((value) => {
+          const dateString = convertObjectDateToStringDate(value?.date);
+          const [date] = dateString.split('T');
+          const [year, month] = date.split('-');
+
+          if (`${month}-${year}` === monthAndYear) return value;
+        }).length;
+
+        return { type: `${translateMonths[month]}/${year}`, value };
+      },
+    );
+
+    const accessCount = countDay(
+      access.map((value) => {
+        const [date] = convertObjectDateToStringDate(value?.date).split('T');
+
+        return date;
+      }),
+    );
+
+    const accessForDays = Object.entries(accessCount).map((value) => ({
+      type: value?.[0],
+      value: value?.[1],
+    }));
+
+    const newUsersCount = countDay(
+      newUsers.map((value) => {
+        const [date] = convertObjectDateToStringDate(value?.date).split('T');
+
+        return date;
+      }),
+    );
+
+    const newUserForDays = Object.entries(newUsersCount).map((value) => ({
+      type: value?.[0],
+      value: value?.[1],
+    }));
+
+    const verifyUsersCount = countDay(
+      verifyUsers.map((value) => {
+        const [date] = convertObjectDateToStringDate(value?.date).split('T');
+
+        return date;
+      }),
+    );
+
+    const verifyUsersForDays = Object.entries(verifyUsersCount).map(
+      (value) => ({
+        type: value?.[0],
+        value: value?.[1],
+      }),
+    );
+
+    const mapCount = countCity(access.map((value) => value?.location));
+
+    const mapForCitys = Object.entries(mapCount).map((value) => ({
+      type: value?.[0],
+      value: value?.[1],
+    }));
+
+    const ambiencesFormated: Array<{ type: string; value: number }> = [
+      {
         type: 'BRAB - Skyroom',
-        value: locations.filter((value) => value.location === 'skyroom').length,
+        value: ambiences.filter((value) => value.location === '1').length,
       },
       {
         type: 'BRAB - Espaço Mídia',
-        value: locations.filter((value) => value.location === 'espacoMidia')
-          .length,
+        value: ambiences.filter((value) => value.location === '3').length,
       },
       {
         type: 'BRAB - Rodada de negócios',
-        value: locations.filter((value) => value.location === 'rodada').length,
+        value: ambiences.filter((value) => value.location === '2').length,
       },
       {
         type: 'BRAB - Oficinas do futuro',
-        value: locations.filter((value) => value.location === 'oficinas')
-          .length,
+        value: ambiences.filter((value) => value.location === '4').length,
       },
       {
         type: 'Sala de reunião instituicional 1',
-        value: locations.filter(
-          (value) => value.location === 'salaInstituicional1',
-        ).length,
-      },
-      {
-        type: 'Sala de reunião instituicional 2',
-        value: locations.filter(
-          (value) => value.location === 'salaInstituicional2',
-        ).length,
-      },
-      {
-        type: 'Sala de reunião instituicional 3',
-        value: locations.filter(
-          (value) => value.location === 'salaInstituicional3',
-        ).length,
-      },
-      {
-        type: 'Sala de reunião instituicional 4',
-        value: locations.filter(
-          (value) => value.location === 'salaInstituicional4',
-        ).length,
+        value: ambiences.filter((value) => value.location === '7').length,
       },
       {
         type: 'Audititório institucional 1',
-        value: locations.filter(
-          (value) => value.location === 'audInstituicional1',
-        ).length,
-      },
-      {
-        type: 'Audititório institucional 2',
-        value: locations.filter(
-          (value) => value.location === 'audInstituicional2',
-        ).length,
-      },
-      {
-        type: 'Audititório institucional 3',
-        value: locations.filter(
-          (value) => value.location === 'audInstituicional3',
-        ).length,
-      },
-      {
-        type: 'Audititório institucional 4',
-        value: locations.filter(
-          (value) => value.location === 'audInstituicional4',
-        ).length,
+        value: ambiences.filter((value) => value.location === '8').length,
       },
       {
         type: 'Meeting Room',
-        value: locations.filter((value) => value.location === 'meetingRoom')
-          .length,
+        value: ambiences.filter((value) => value.location === '6').length,
       },
       {
         type: 'Arena Agriland',
-        value: locations.filter((value) => value.location === 'arena').length,
+        value: ambiences.filter((value) => value.location === '5').length,
       },
     ];
 
     const formatData = {
       events,
+      ambiences: ambiencesFormated,
       locations: locationsFormated,
-      accessForDays: access,
-      accessForMonth: [],
-      newUsers,
-      verifyUsers,
-      map: [],
+      accessForDays,
+      accessForMonth,
+      newUsers: newUserForDays,
+      verifyUsers: verifyUsersForDays,
+      map: mapForCitys,
     };
 
     return formatData;
