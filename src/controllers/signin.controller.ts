@@ -59,7 +59,12 @@ export class SigninController {
     if (!responseEdit)
       throw new NotFoundException('Não foi possível registrar seu token.');
 
-    await this.analyticService.createAnalytics({ date: now, type: 'access' });
+    await this.analyticService.createAnalytics({
+      date: now,
+      type: 'access',
+      location: '',
+      painelId: 0,
+    });
 
     const returnData: Partial<User> = {
       accessLevel: response?.accessLevel,
