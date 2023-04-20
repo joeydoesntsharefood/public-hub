@@ -13,6 +13,7 @@ import { ResponseInterceptor } from 'src/interceptors/user.interceptor';
 import { AnalyticService } from 'src/services/analytic.service';
 import { countCity } from 'src/utils/countCity';
 import { countDay } from 'src/utils/countDay';
+import { getIntersectingMonths } from 'src/utils/getIntersectingMonths';
 import { newDate } from 'src/utils/newDate';
 import translateMonths from 'src/utils/translate.months';
 
@@ -84,7 +85,7 @@ export class AnalyticController {
 
     const verifyUsers = response
       ?.filter((value) => value.type === 'verifyUsers')
-      .map(formatEvents);
+      ?.map(formatEvents);
 
     const ambiences = response?.filter((value) => value.type === 'ambiences');
 
@@ -184,18 +185,26 @@ export class AnalyticController {
       },
     ];
 
-    const [year, month] = startAt.split('-');
+    const [year, month] = endAt ? endAt.split('-') : startAt.split('-');
 
     const formatMonth = (month: number): string =>
       month.toString().padStart(2, '0');
 
-    const lastMonths = (month: number, year: number): string[] => {
+    const lastMonths = ({
+      month,
+      year,
+      totalMonths,
+    }: {
+      month: number;
+      year: number;
+      totalMonths?: number;
+    }): string[] => {
       const date = new Date(year, month - 1, 1);
       date.setFullYear(date.getFullYear() - (month < 5 ? 1 : 0));
 
       let currentYear = year;
 
-      const months = Array.from({ length: 5 }, (_, i) => {
+      const months = Array.from({ length: totalMonths ?? 5 }, (_, i) => {
         const lastMonth = ((((month - 1 - i) % 12) + 12) % 12) + 1;
 
         if (lastMonth === 12) currentYear--;
@@ -206,7 +215,19 @@ export class AnalyticController {
       return months;
     };
 
-    const months = lastMonths(Number(month), Number(year));
+    let totalMonths = 5;
+
+    if (startAt && endAt) {
+      const intersectingMonths = getIntersectingMonths({ startAt, endAt });
+      if (intersectingMonths.length > 1)
+        totalMonths = intersectingMonths.length;
+    }
+
+    const months = lastMonths({
+      month: Number(month),
+      year: Number(year),
+      totalMonths,
+    });
 
     const accessForMonth: Array<{ type: string; value: number }> = months.map(
       (monthAndYear: string) => {
