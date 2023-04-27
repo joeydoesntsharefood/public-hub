@@ -328,15 +328,18 @@ export class AnalyticController {
       },
     ];
 
+    const filterNoValue = (value: { type: string; value: number }) =>
+      value.value !== 0;
+
     const formatData = {
-      events,
-      ambiences: ambiencesFormated,
-      locations: locationsFormated,
-      accessForDays,
-      accessForMonth,
-      newUsers: newUserForDays,
-      verifyUsers: verifyUsersForDays,
-      map: mapForCitys,
+      events: events.filter(filterNoValue),
+      ambiences: ambiencesFormated.filter(filterNoValue),
+      locations: locationsFormated.filter(filterNoValue),
+      accessForDays: accessForDays.filter(filterNoValue),
+      accessForMonth: accessForMonth.filter(filterNoValue),
+      newUsers: newUserForDays.filter(filterNoValue),
+      verifyUsers: verifyUsersForDays.filter(filterNoValue),
+      map: mapForCitys.filter(filterNoValue),
     };
 
     return formatData;
